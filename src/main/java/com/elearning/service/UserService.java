@@ -72,4 +72,5 @@ public interface UserService {
 	public List<String> getCertiPaths(int uid);
 	public List<String> getVideoStatus(int uid,int cid);
 	public boolean isFeedbackGiven(int uid,int cid);
+	void forgetpassword(String password, String mail);
 }

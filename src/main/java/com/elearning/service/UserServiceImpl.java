@@ -6,13 +6,11 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
-import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.servlet.http.HttpSession;
-import javax.transaction.Transactional;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -45,7 +43,6 @@ import com.elearning.repositiories.VideoRepo;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
@@ -214,7 +211,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<Course> fetchcompletedCourses(int userId) {
-		Optional<User> userD = ur.findById(userId);
+		
 		List<Course> ecrs = cr.getFinsihedCourses(userId);
 		return ecrs;
 //		/ return  ecrs.stream().filter(a->a.!=null && a.getStartDate()!=null).collect(Collectors.toList());
@@ -392,17 +389,27 @@ public class UserServiceImpl implements UserService {
 	public boolean nextVideo(int cid, int uid, int vid) {
 		// TODO Auto-generated method stub
 		Optional<Course> course = cr.findById(cid);
-		Optional<Video> video = vr.findById(vid);
+		List<Video> videos = vr.findAllByCourseOrderBySrNoAsc(course.get());
+		int prevvideo=0;
+	for(int i=1;i<videos.size();i++) {
+		if(videos.get(i).getVideoId()==vid) {
+			
+			prevvideo=videos.get(i-1).getVideoId();
+		}
+	}
+
 		Optional<User> u = ur.findById(uid);
 		EnrolledCourses ec = ecr.findByUserAndCourse(u.get(), course.get());
-		int ecid = ec.getEcourseId();
+
 		List<EnrolledCourseVideo> ecvs = ecvr.findAllByEc(ec);
 		for (int i = 0; i < ecvs.size(); i++) {
-			if (ecvs.get(i).getVideo() == vid) {
-				if (i == 0) {
-					return true;
-				}
-				if (ecvs.get(i - 1).isCompleted() == true) {
+			if(prevvideo==0) {
+				return true;
+			}
+			if (ecvs.get(i).getVideo() == prevvideo) {
+			
+			
+				if (ecvs.get(i).isCompleted() == true) {
 					return true;
 				}
 				return false;
@@ -415,42 +422,39 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean completeVideo(int cid, int uid, int vid) throws AddressException, MessagingException, IOException {
 		Optional<Course> course = cr.findById(cid);
-		Optional<Video> video = vr.findById(vid);
+
 		Optional<User> u = ur.findById(uid);
 		EnrolledCourses ec = ecr.findByUserAndCourse(u.get(), course.get());
 		List<EnrolledCourseVideo> ecvs = ec.getEcvideo();
+		boolean isCourseCompleted=true;
+	
 		for (int i = 0; i < ecvs.size(); i++) {
 			if (ecvs.get(i).getVideo() == vid) {
 				ecvs.get(i).setCompleted(true);
-				if (i == ecvs.size() - 1) {
-					long millis = System.currentTimeMillis();
-					Date date = new java.sql.Date(millis);
-					ec.setEndDate(date);
-					ec.setEcvideo(ecvs);
-					//ecvr.deleteAllByEc(ec);
-					ecr.save(ec);
-					generateCompeletionCerti(uid, cid);
-//					Certificate certi1=ctr.findByUserAndCourse(u.get(), course.get());
-//					PdfMail pd = new PdfMail();
-//					pd.sendEmail(u.get().getEmail(), certi1.getCertiPath());
-//					for(i=0;i<ec.getEcvideo().size();i++) {
-//						int id=ec.getEcvideo().get(i).getEcvId();
-//						ecvr.deleteById(id);
-//						System.out.println(ec.getEcvideo().get(i).getEcvId());
-//					
-//					}
-//					//ecvr.deleteAllByEc(ec);
-//					ecvr.deleteById(292);
-//					ecvr.deleteById(293);
-				ecvr.DeleteEcv(ec.getEcourseId());
-					return true;
-
-				}
+				
 			}
 
 		}
+		
 		ec.setEcvideo(ecvs);
 		ecr.save(ec);
+		for (int i = 0; i < ecvs.size(); i++) {
+			isCourseCompleted=ecvs.get(i).isCompleted() && isCourseCompleted;
+			
+		}
+		if ( isCourseCompleted) {
+			long millis = System.currentTimeMillis();
+			Date date = new java.sql.Date(millis);
+			ec.setEndDate(date);
+			ec.setEcvideo(ecvs);
+			//ecvr.deleteAllByEc(ec);
+			ecr.save(ec);
+			generateCompeletionCerti(uid, cid);
+
+			ecvr.DeleteEcv(ec.getEcourseId());
+			return true;
+
+		}
 
 		// TODO Auto-generated method stub
 
@@ -474,8 +478,16 @@ public class UserServiceImpl implements UserService {
 		try {
 			PdfWriter.getInstance(document, new FileOutputStream("D:/java-g6-security-ui-main/pdf/"+pdfname + ".pdf"));
 			document.open();
+			
+			
+			Image cybage = Image.getInstance("Cybage-e-learning-logo.png");
+			cybage.setAlignment(Element.ALIGN_CENTER);
+			cybage.setBackgroundColor(BaseColor.BLUE);
+			document.add(cybage);  
+			
+			
 			Paragraph right = new Paragraph(Element.ALIGN_RIGHT);
-			Paragraph left = new Paragraph(Element.ALIGN_LEFT);
+
 			Font font = FontFactory.getFont(FontFactory.COURIER_BOLD, 30, BaseColor.BLACK);
 			Chunk chunk = new Chunk("Certificate Of Completion", font);
 			Paragraph preface = new Paragraph(chunk);
@@ -513,10 +525,13 @@ public class UserServiceImpl implements UserService {
 			table.setPaddingTop(2000);
 
 			document.add(table);
-			Image cybage = Image.getInstance("Cybage-e-learning-logo.png");
-			cybage.setAlignment(Element.ALIGN_CENTER);
-			cybage.setBackgroundColor(BaseColor.BLUE);
-			document.add(cybage);
+			
+			Chunk chunk5 = new Chunk("© 2021 Copyright:" + "\n", font2);
+			Chunk chunk6 = new Chunk("G-6 Cybage E-Learning" , font2);
+			Paragraph footer=new Paragraph();
+			footer.add(chunk5);footer.add(chunk6);
+			document.add(footer);
+			
 
 			document.close();
 			Certificate certi1=ctr.findByUserAndCourse(user.get(), course.get());
@@ -544,11 +559,9 @@ public class UserServiceImpl implements UserService {
 		Optional<User> u = ur.findById(userid);
 		int random = (int) (Math.random() * 100000);
 		if(session != null) session.setAttribute(u.get().getUsername(),random);
-		System.out.println(session.getAttribute("adit"));
-		System.out.println("insdie sssssss");
 		String userEmail=u.get().getEmail();
 		EmailUtil eu = new EmailUtil();
-		eu.sendEmail(userEmail, random+ " ");
+		eu.sendEmail(userEmail, "Your one time password for verification is " +random+ " ");
 		return random;
 	}
 
@@ -575,8 +588,7 @@ public class UserServiceImpl implements UserService {
 		Optional<User> user=ur.findById(uid);
 		user.get().setLocked(true);
 		ur.save(user.get());
-		EmailUtil eu = new EmailUtil();
-		eu.sendEmail(user.get().getEmail(), "your account with "+user.get().getUsername()+" - username has been locked due to three invalid login attmepts");
+		
 		
 		
 		// TODO Auto-generated method stub
@@ -590,9 +602,7 @@ public class UserServiceImpl implements UserService {
 		user.get().setLocked(false);
 		user.get().setFailedattempts(0);
 		ur.save(user.get());
-		EmailUtil eu = new EmailUtil();
-		eu.sendEmail(user.get().getEmail(), "On your request , your account with "+user.get().getUsername()+" - username has been unlocked. Now you can login to the Application");
-		
+	
 		
 		// TODO Auto-generated method stub
 		return true;
@@ -606,6 +616,8 @@ public class UserServiceImpl implements UserService {
 		if(user!=null) {
 			if(user.getFailedattempts()==2) {
 				user.setLocked(true);
+				EmailUtil eu = new EmailUtil();
+				eu.sendEmail(user.getEmail(), "your account with "+user.getUsername()+" - username has been locked due to three invalid login attmepts");
 			}
 			if(user.getFailedattempts()<3) {
 				int temp=user.getFailedattempts();
@@ -667,7 +679,7 @@ public class UserServiceImpl implements UserService {
 		User u = ur.findByEmail(email);
 		int random = (int) (Math.random() * 100000);
 		EmailUtil eu = new EmailUtil();
-		eu.sendEmail(u.getEmail(), random+ " ");
+		eu.sendEmail(u.getEmail(), "Your one time password for forgot password is "+random+ " ");
 		return random;
 	}
 
@@ -678,6 +690,15 @@ public class UserServiceImpl implements UserService {
 		u.get().setPassword(new BCryptPasswordEncoder().encode(password));
 		ur.save(u.get());
 	}
+	
+	@Override
+	public void forgetpassword(String mail, String password) {
+		// TODO Auto-generated method stub
+		User u = ur.findByEmail(mail);
+		u.setPassword(new BCryptPasswordEncoder().encode(password));
+		ur.save(u);
+	}
+
 
 	@Override
 	public void sendcert(int userid,int courseid) throws AddressException, MessagingException, IOException {

@@ -22,7 +22,7 @@ public interface EnrolledCourseVideoRepo extends JpaRepository<EnrolledCourseVid
 	@Query(value="Select COUNT(completed)  as completed FROM enrolled_course_video where ecourse_id=?1 and completed is true;",nativeQuery = true)
     public int noOfCompletedVideo(int ecid);
 	
-	@Query(value="Select completed  FROM enrolled_course_video where ecourse_id=?1 ",nativeQuery = true)
+	@Query(value="SELECT ecv.completed from enrolled_course_video ecv,video v where v.video_id=ecv.video_id and ecv.ecourse_id=?1 order by v.sr_no;",nativeQuery = true)
     public List<Boolean> videoStatus(int ecid);
 	
 	

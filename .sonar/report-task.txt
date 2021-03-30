@@ -1,0 +1,5 @@
+projectKey=java-major-g6-back
+serverUrl=http://172.27.12.78
+dashboardUrl=http://172.27.12.78/dashboard/index/java-major-g6-back
+ceTaskId=AXiDVEXwirXW5IlAPXFV
+ceTaskUrl=http://172.27.12.78/api/ce/task?id=AXiDVEXwirXW5IlAPXFV

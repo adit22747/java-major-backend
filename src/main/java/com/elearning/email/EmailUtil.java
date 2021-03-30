@@ -44,7 +44,7 @@ public class EmailUtil {
         message.setFrom(new InternetAddress("dadaramj@evolvingsols.com"));
         message.setRecipients(Message.RecipientType.TO,
                 InternetAddress.parse(to));
-        message.setSubject("Test email");
+        message.setSubject("Cybage Elearning");
         message.setText(msg);
         
         Transport.send(message);

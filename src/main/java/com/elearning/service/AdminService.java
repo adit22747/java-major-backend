@@ -3,6 +3,9 @@ package com.elearning.service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
 import com.elearning.entity.Category;
 import com.elearning.entity.Course;
 import com.elearning.entity.User;
@@ -51,7 +54,7 @@ public interface AdminService {
 
 	public List<User> getLockedAccount();
 
-	public boolean unlocakAccount(int uid);
+	public boolean unlocakAccount(int uid) throws AddressException, MessagingException;
 
 	public boolean lockAccount(int uid);
 

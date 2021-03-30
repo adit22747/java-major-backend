@@ -47,7 +47,7 @@ public class PdfMail {
        message.setFrom(new InternetAddress("dadaramj@evolvingsols.com"));
        message.setRecipients(Message.RecipientType.TO,
                InternetAddress.parse(to));
-       message.setSubject("Test email");
+       message.setSubject("Cybage Elearning");
 
        BodyPart messageBodyPart = new MimeBodyPart(); 
        messageBodyPart.setText("Mail Body");

@@ -5,10 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.elearning.email.EmailUtil;
 import com.elearning.entity.Category;
 import com.elearning.entity.Comment;
 import com.elearning.entity.Course;
@@ -135,6 +139,13 @@ public class AdminServiceImpl implements AdminService {
 		List<Video> video = ctest.get().getVideo();
 		String cat_name = ctest.get().getCategory();
 		Category category = cat.findByCategoryName(cat_name);
+		Optional<Course> course = cou.findById(c.getCourseId());
+		if(c.getCoursePrice()!=course.get().getCoursePrice()) {
+			long millis = System.currentTimeMillis();
+			Date date = new java.sql.Date(millis);
+			c.setLastupdated(date);
+			
+		}
 //		if(c.getCoursePrice()!=) {
 //			
 //		}
@@ -202,6 +213,7 @@ public class AdminServiceImpl implements AdminService {
 	public boolean updateVideo(Video v, int id) {
 		Optional<Video> video = vr.findById(v.getVideoId());
 		Course course = cou.findByCourseName(video.get().getCourse());
+		v.setSrNo(video.get().getSrNo());
 		v.setCourse(course);
 		vr.save(v);
 		return true;
@@ -244,11 +256,14 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 	@Override
-	public boolean unlocakAccount(int uid) {
+	public boolean unlocakAccount(int uid) throws AddressException, MessagingException {
 		Optional<User> user = ur.findById(uid);
 		user.get().setLocked(false);
 		user.get().setFailedattempts(0);
 		ur.save(user.get());
+		EmailUtil eu = new EmailUtil();
+		eu.sendEmail(user.get().getEmail(), "On your request , your account with "+user.get().getUsername()+" - username has been unlocked. Now you can login to the Application");
+		
 		return true;
 	}
 
