@@ -76,6 +76,17 @@ public class Category {
 		this.categoryLogo = categoryLogo;
 		this.courses = courses;
 	}
+	public Category(int categoryId, String categoryName, String categoryDesc, String categoryLogo,
+			List<Course> courses) {
+		super();
+		this.categoryId = categoryId;
+		this.categoryName = categoryName;
+		this.categoryDesc = categoryDesc;
+		this.categoryLogo = categoryLogo;
+		this.courses = courses;
+	}
+	
+	
 	
 	
 }

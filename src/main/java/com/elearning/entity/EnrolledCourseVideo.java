@@ -14,7 +14,7 @@ public class EnrolledCourseVideo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int ecvId;
-	private int timeSeen;
+	
 	private boolean completed;
 	
 	
@@ -30,10 +30,9 @@ public class EnrolledCourseVideo {
 		super();
 	}
 
-	public EnrolledCourseVideo(int timeSeen, boolean completed, Video video, EnrolledCourses ec) {
+	public EnrolledCourseVideo( boolean completed, Video video, EnrolledCourses ec) {
 		super();
-		this.timeSeen = timeSeen;
-		this.completed = completed;
+				this.completed = completed;
 		this.video = video;
 		this.ec = ec;
 	}
@@ -46,13 +45,7 @@ public class EnrolledCourseVideo {
 		this.ecvId = ecvId;
 	}
 
-	public int getTimeSeen() {
-		return timeSeen;
-	}
-
-	public void setTimeSeen(int timeSeen) {
-		this.timeSeen = timeSeen;
-	}
+	
 
 	public boolean isCompleted() {
 		return completed;

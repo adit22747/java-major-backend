@@ -73,4 +73,6 @@ public interface UserService {
 	public List<String> getVideoStatus(int uid,int cid);
 	public boolean isFeedbackGiven(int uid,int cid);
 	void forgetpassword(String password, String mail);
+	public Optional<Comment> getCommentById(int commentid);
+	public Optional<Feedback> getFeedbackById(int feedbackid);
 }

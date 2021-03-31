@@ -225,6 +225,51 @@ public class Course {
 	public void setLikess(List<Like> likess) {
 		this.likess = likess;
 	}
+	public Course(int courseId, String courseName, String courseDesc, String courseLogo, int coursePrice, int likes,
+			Category category, List<Comment> comments, int avgrating, int enrollments, int totalcomment, int videosize) {
+		super();
+		this.courseId = courseId;
+		this.courseName = courseName;
+		this.courseDesc = courseDesc;
+		this.courseLogo = courseLogo;
+		this.coursePrice = coursePrice;
+		this.likes = likes;
+		this.category = category;
+		this.comments = comments;
+		this.rating = avgrating;
+		this.enrollments = enrollments;
+		this.totalcomment = totalcomment;
+		this.videosize = videosize;
+	
+	}
+	public Course(String courseName, String courseDesc, String courseLogo, int coursePrice, int likes,
+			Category category, List<Comment> comments, int avgrating, int enrollments, int totalcomment, int videosize) {
+		super();
+		
+		this.courseName = courseName;
+		this.courseDesc = courseDesc;
+		this.courseLogo = courseLogo;
+		this.coursePrice = coursePrice;
+		this.likes = likes;
+		this.category = category;
+		this.comments = comments;
+		this.rating = avgrating;
+		this.enrollments = enrollments;
+		this.totalcomment = totalcomment;
+		this.videosize = videosize;
+	
+	}
+	public Course(int courseId, String courseName, String courseDesc, String courseLogo, int coursePrice, int likes) {
+		super();
+		this.courseId = courseId;
+		this.courseName = courseName;
+		this.courseDesc = courseDesc;
+		this.courseLogo = courseLogo;
+		this.coursePrice = coursePrice;
+		this.likes = likes;
+		
+	}
+	
 	
 	
 }

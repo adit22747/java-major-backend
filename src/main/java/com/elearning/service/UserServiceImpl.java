@@ -339,7 +339,7 @@ public class UserServiceImpl implements UserService {
 		List<Video> videos = vr.findAllByCourse(course.get());
 		List<EnrolledCourseVideo> ecvideos = new ArrayList<>();
 		for (Video video : videos) {
-			EnrolledCourseVideo ecv = new EnrolledCourseVideo(0, false, video, null);
+			EnrolledCourseVideo ecv = new EnrolledCourseVideo(false, video, null);
 			ecvideos.add(ecv);
 
 		}
@@ -803,25 +803,21 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public List<Date> getEDates(int uid) {
-		// TODO Auto-generated method stub
 		return ecr.getEnrollmentCourseDates(uid);
 	}
 
 	@Override
 	public List<Date> getFDates(int uid) {
-		// TODO Auto-generated method stub
 		return ecr.getFinishedCourseDates(uid);
 	}
 
 	@Override
 	public List<String> getCertiPaths(int uid) {
-		// TODO Auto-generated method stub
 		return ctr.getCertipaths(uid);
 	}
 
 	@Override
 	public List<String> getVideoStatus(int uid, int cid) {
-		// TODO Auto-generated method stub
 		EnrolledCourses ec = ecr.findByUserAndCourse(ur.findById(uid).get(),cr.findById(cid).get());
 		List<Boolean> videostatus = ecvr.videoStatus(ec.getEcourseId());
 		List<String> ecVideoStatus=new ArrayList<>();
@@ -837,7 +833,6 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public List<Course> getEnrolledCourse(int uid) {
-		// TODO Auto-generated method stub
 		List<Course> cs = cr.getEnrolledCourses(uid);
 		List<Integer> ecids=ecr.getEnrollmentCourseIds(uid);
 
@@ -868,6 +863,16 @@ public class UserServiceImpl implements UserService {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public Optional<Comment> getCommentById(int commentid) {
+		return comr.findById(commentid);
+	}
+
+	@Override
+	public Optional<Feedback> getFeedbackById(int feedbackid) {
+		return fr.findById(feedbackid);
 	}
 
 	

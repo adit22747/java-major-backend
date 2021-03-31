@@ -18,7 +18,6 @@ public class Profile {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int profileId;
 	private String fullName;
-	private SerialBlob userImage;
 	private Date birthdate;
 	private String gender;
 	private long contact;
@@ -33,12 +32,7 @@ public class Profile {
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
 	}
-	public SerialBlob getUserImage() {
-		return userImage;
-	}
-	public void setUserImage(SerialBlob userImage) {
-		this.userImage = userImage;
-	}
+	
 	public Date getBirthdate() {
 		return birthdate;
 	}
@@ -53,19 +47,19 @@ public class Profile {
 	}
 	public Profile() {
 	}
-	public Profile(String fullName, SerialBlob userImage, Date birthdate, String gender) {
+	public Profile(String fullName,  Date birthdate, String gender) {
 		super();
 		this.fullName = fullName;
-		this.userImage = userImage;
+		
 		this.birthdate = birthdate;
 		this.gender = gender;
 	}
-	public Profile(int profileId, String fullName, SerialBlob userImage, Date birthdate, String gender, long contact,
+	public Profile(int profileId, String fullName, Date birthdate, String gender, long contact,
 			String searchOccupation, User user) {
 		super();
 		this.profileId = profileId;
 		this.fullName = fullName;
-		this.userImage = userImage;
+		
 		this.birthdate = birthdate;
 		this.gender = gender;
 		this.contact = contact;

@@ -79,20 +79,27 @@ public class UserController {
 
 	@PreAuthorize("hasAuthority('user')")
 	@DeleteMapping("/comment")
-	public ResponseEntity<String> deleteComment(@RequestParam int commentid) {
-
-		uservice.deleteComment(commentid);
-		return null;
-
+	public ResponseEntity<Boolean> deleteComment(@RequestParam int commentid) {
+		Optional<Comment> c = uservice.getCommentById(commentid);
+		if (c.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Given comment not found, so cannot be deleted!!!");
+		} else {
+			uservice.deleteComment(commentid);
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(true);
+		}
 	}
 
 	@PreAuthorize("hasAuthority('user')")
 	@DeleteMapping("/feedback")
-	public ResponseEntity<String> deletefeedback(@RequestParam int feedbackid) {
-
-		uservice.deleteFeedback(feedbackid);
-		return null;
-
+	public ResponseEntity<Boolean> deletefeedback(@RequestParam int feedbackid) {
+		Optional<Feedback> f = uservice.getFeedbackById(feedbackid);
+		if (f.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+					"Given feedback not found, so cannot be deleted!!!");
+		} else {
+			uservice.deleteComment(feedbackid);
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(true);
+		}
 	}
 
 	@PreAuthorize("hasAuthority('user')")
@@ -121,19 +128,24 @@ public class UserController {
 
 	@PreAuthorize("hasAuthority('user')")
 	@GetMapping("/comment")
-	public List<Comment> fetchComment(@RequestParam int courseid) {
-		return uservice.fetchComment(courseid);
+	public ResponseEntity<List<Comment>> fetchComment(@RequestParam int courseid) {
+		List<Comment> c = uservice.fetchComment(courseid);
+		if (c == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, " No comments present!!!");
+		} else {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(c);
+		}
 	}
 
-//	@GetMapping("/feedback")
-//	public List<Comment> fetchFeedback(@RequestParam int feedbackid){
-//		return uservice.fetchComment(feedbackid);
-//	}
-//	
 	@PreAuthorize("hasAuthority('user')")
 	@GetMapping("/feedback")
-	public List<Feedback> fetchFeedbackbyCourseID(@RequestParam int courseid) {
-		return uservice.fetchFeedbacks(courseid);
+	public ResponseEntity<List<Feedback>> fetchFeedbackbyCourseID(@RequestParam int courseid) {
+		List<Feedback> f = uservice.fetchFeedbacks(courseid);
+		if (f == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, " No feedback present!!!");
+		} else {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(f);
+		}
 	}
 
 	@PreAuthorize("hasAuthority('user')")
@@ -146,63 +158,91 @@ public class UserController {
 	@GetMapping("/courses")
 	public ResponseEntity<List<Course>> AllCourse() {
 		List<Course> li = uservice.AllCourse();
-		for (Course l : li) {
-			System.out.println(l);
+		if (li == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, " No course present!!!");
+		} else {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(li);
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(li);
 	}
 
 	@PreAuthorize("hasAuthority('user')")
 	@GetMapping("/videos")
 	public ResponseEntity<List<Video>> getVideos(@RequestParam int courseid) {
 		List<Video> li = uservice.getVideos(courseid);
-		return ResponseEntity.status(HttpStatus.OK).body(li);
+		if (li == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, " No video present!!!");
+		} else {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(li);
+		}
 	}
 
 	// show course by id
 	@PreAuthorize("hasAuthority('user')")
 	@GetMapping("/course")
-	public Optional<Course> CourseById(@RequestParam int courseid) {
-		return uservice.getCourseById(courseid);
+	public ResponseEntity<Optional<Course>> CourseById(@RequestParam int courseid) {
+		Optional<Course> li = uservice.getCourseById(courseid);
+		if (li == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, " No video present!!!");
+		} else {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(li);
+		}
 	}
 
 	// total number of feedbacks
 	@PreAuthorize("hasAuthority('user')")
 	@GetMapping("/feedbackcount")
-	public int feedbackcount(@RequestParam int courseid) {
-		return uservice.feedbackcount(courseid);
+	public ResponseEntity<Integer> feedbackcount(@RequestParam int courseid) {
+		int c;
+		c = (int) uservice.feedbackcount(courseid);
+		if (c == 0) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "feedback count is '0'!!!");
+		} else {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(c);
+		}
 	}
 
 	// total number of comments
 	@PreAuthorize("hasAuthority('user')")
 	@GetMapping("/commentcount")
-	public int commentcount(@RequestParam int courseid) {
-		return uservice.commentcount(courseid);
+	public ResponseEntity<Integer> commentcount(@RequestParam int courseid) {
+		int c;
+		c = (int) uservice.commentcount(courseid);
+		if (c == 0) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment count is '0'!!!");
+		} else {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(c);
+		}
 	}
 	
 
 	@PreAuthorize("hasAuthority('user')")
 	@PutMapping(path = "/like/{cid}/{uid}")
-	public ResponseEntity<Boolean> like(@PathVariable int cid, @PathVariable int uid) {
-
-		// 11 is the user id
-		boolean status = uservice.like(uid, cid);
-		if (status) {
-			return  ResponseEntity.status(HttpStatus.OK).body(status); 
+	public ResponseEntity<String> like(@PathVariable int cid, @PathVariable int uid) {
+		if ((cid == 0) || (uid == 0)) {
+			throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "'LIKE operation failed!!!");
 		}
-		return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(status);
+		else {
+			boolean status = uservice.like(uid, cid);
+			if (status) {
+				return ResponseEntity.status(HttpStatus.ACCEPTED).body("Liked !!!");
+			}
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body("Cannot like !!!");
+		}
 	}
 
 	@PreAuthorize("hasAuthority('user')")
 	@DeleteMapping(path = "/unlike/{cid}/{uid}")
-	public String unlike(@PathVariable int cid, @PathVariable int uid) {
-
-		// 11 is the user id
-		boolean status = uservice.unlike(uid, cid);
-		if (status) {
-			return "Un Liked";
+	public ResponseEntity<String> unlike(@PathVariable int cid, @PathVariable int uid) {
+		if ((cid == 0) || (uid == 0)) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "'LIKE not present'!!!");
 		}
-		return "can not unlike";
+		else {
+			boolean status = uservice.unlike(uid, cid);
+			if (status) {
+				return ResponseEntity.status(HttpStatus.ACCEPTED).body("Un Liked");
+			}
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body("can not unlike");
+		}
 	}
 
 	@PreAuthorize("hasAuthority('user')")
@@ -235,8 +275,13 @@ public class UserController {
 
 	@PreAuthorize("hasAuthority('user')")
 	@GetMapping(path = "/enrolledcourses/video/{cid}/{uid}")
-	public List<Video> getVideo(@PathVariable int cid, @PathVariable int uid) {
-		return uservice.getEnrolledCourseVideo(uid, cid);
+	public ResponseEntity<List<Video>> getVideo(@PathVariable int cid, @PathVariable int uid) {
+		List<Video> li = uservice.getEnrolledCourseVideo(uid, cid);
+		if (li == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, " No video present!!!");
+		} else {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(li);
+		}
 	}
 
 	@PreAuthorize("hasAuthority('user')")
@@ -296,9 +341,13 @@ public class UserController {
 
 
 	@PostMapping(path = "/adduser")
-	@ResponseStatus(code = HttpStatus.CREATED)
-	public String createUser(@RequestBody User user) {
-		return uservice.createUser(user);
+	public ResponseEntity<String> createUser(@RequestBody User user) {
+		String b = uservice.createUser(user);
+		if (b == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not created!!!");
+		} else {
+			return ResponseEntity.status(HttpStatus.CREATED).body(b);
+		}
 	}
 
 	@PreAuthorize("hasAuthority('user')")
@@ -347,37 +396,37 @@ public class UserController {
 	
 	@PreAuthorize("hasAuthority('user')")
 	@GetMapping(path = "sendcert/{courseid}/{userid}")
-	public String sendcert(@PathVariable int courseid, @PathVariable int userid)
+	public ResponseEntity<String> sendcert(@PathVariable int courseid, @PathVariable int userid)
 			throws AddressException, MessagingException, IOException {
-		
-		uservice.sendcert( userid, courseid);
-		return "sent";
-
+		if ((userid == 0) || (courseid == 0)) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Can't send certificate!!!");
+		} else {
+			uservice.sendcert(userid, courseid);
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body("sent");
+		}
 	}
 
 	@PreAuthorize("hasAuthority('user')")
 	@PostMapping("/profile/{userid}") // we have send userid while creating profile
 	@ResponseStatus(code = HttpStatus.CREATED)
-	public Profile createProfile(@PathVariable int userid, @RequestBody Profile profile) {
-		// file from model attribute
-//		
-//		//profile.setUserImage(file.getInputStream());
-//		try {
-//			InputStream inputStream = file.getInputStream();
-//			byte[] b = IOUtils.toByteArray(inputStream);
-//			SerialBlob blob = new javax.sql.rowset.serial.SerialBlob(b);
-//			profile.setUserImage(blob);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		return uservice.createProfile(userid, profile);
+	public ResponseEntity<Profile> createProfile(@PathVariable int userid, @RequestBody Profile profile) {
+		if (profile == null) {
+			throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Can't create profile!!!");
+		} else {
+			Profile p = uservice.createProfile(userid, profile);
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(p);
+		}
 	}
 
 	@PreAuthorize("hasAuthority('user')")
 	@GetMapping("/profile/{userid}")
-	public Profile getProfileDetails(@PathVariable int userid) {
-		return uservice.getProfileDetails(userid);
+	public ResponseEntity<Profile> getProfileDetails(@PathVariable int userid) {
+		if(userid==0) {
+			 throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Can't get profile details!!!");
+		}else {
+			Profile p= uservice.getProfileDetails(userid);
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(p);
+		}
 	}
 
 	@PreAuthorize("hasAuthority('user')")
@@ -400,14 +449,24 @@ public class UserController {
 
 	@PreAuthorize("hasAuthority('user')")
 	@DeleteMapping("/delete/{id}")
-	public boolean deleteUser(@PathVariable int id) {
-		return uservice.deleteUser(id);
+	public ResponseEntity<Boolean> deleteUser(@PathVariable int id) {
+		boolean b=uservice.deleteUser(id);
+		if(b==false) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND," Email not found!!!");
+		}else {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(b);
+		}
 	}
 
 	@PreAuthorize("hasAuthority('user')")
 	@GetMapping("/coursesbycatId/{catId}")
-	public List<Course> getCourseById(@PathVariable int catId) {
-		return uservice.findCourseByCat(catId);
+	public ResponseEntity<List<Course>> getCourseById(@PathVariable int catId) {
+		List<Course> c =  uservice.findCourseByCat(catId);
+		if (c.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No course found!!!");
+		} else {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(c);
+		}
 	}
 	
 	@PreAuthorize("hasAuthority('user')")
@@ -419,17 +478,26 @@ public class UserController {
 	
 	@PreAuthorize("hasAuthority('user')")
 	@GetMapping(path="enrolled/{userid}")
-	public List<Course> getenrolled(@PathVariable int userid) {
-		return uservice.getEnrolledCourse(userid);
-		
+	public ResponseEntity<List<Course>> getenrolled(@PathVariable int userid) {
+		List<Course>c= uservice.getEnrolledCourse(userid);
+		if (c.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No course found!!!");
+		} else {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(c);
+		}
 	}
 	
 	@PreAuthorize("hasAuthority('user')")
 	@GetMapping(path="finished/{userid}")
-	public List<Course> getFinishedCourse(@PathVariable int userid) {
-		return uservice.finishedCourse(userid);
-		
+	public ResponseEntity<List<Course>> getFinishedCourse(@PathVariable int userid) {
+		List<Course>c= uservice.finishedCourse(userid);
+		if (c.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No course found!!!");
+		} else {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(c);
+		}
 	}
+
 	
 	@PreAuthorize("hasAuthority('user')")
 	@GetMapping(path="enrolleddates/{userid}")
@@ -446,9 +514,13 @@ public class UserController {
 	}
 	@PreAuthorize("hasAuthority('user')")
 	@GetMapping(path="certificates/{userid}")
-	public List<String> getCerties(@PathVariable int userid) {
-		return uservice.getCertiPaths(userid);
-		
+	public ResponseEntity<List<String>> getCerties(@PathVariable int userid) {
+		List<String>s= uservice.getCertiPaths(userid);
+		if(s==null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Can't find video status!!!");
+		}else {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(s);
+		}
 	}
 	@PreAuthorize("hasAuthority('user')")
 	@GetMapping(path = "getVideoStatus/{courseid}/{userid}")

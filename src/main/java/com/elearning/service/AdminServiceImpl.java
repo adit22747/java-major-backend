@@ -313,7 +313,7 @@ public class AdminServiceImpl implements AdminService {
 		List<Video> videos=co.get().getVideo();
 		if(videos.size()!=0) {
 			Video Video = videos.get(videos.size()-1);
-			EnrolledCourseVideo ecv=new EnrolledCourseVideo(0, false, Video, null);
+			EnrolledCourseVideo ecv=new EnrolledCourseVideo(false, Video, null);
 			if(ecs.size()!=0) {
 				for(int i=0;i<ecs.size();i++) {
 					List<EnrolledCourseVideo> ecvs = ecs.get(i).getEcvideo();

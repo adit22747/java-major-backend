@@ -111,6 +111,15 @@ public class Video {
 		this.courseName = courseName;
 	}
 
+	public Video(int videoId, String videoName, String videoDesc, String videoPath,Course course) {
+		super();
+		this.videoId = videoId;
+		this.course = course;
+		this.videoName = videoName;
+		this.videoDesc = videoDesc;
+		this.videoPath = videoPath;
+	}
+
 	
 
 	
