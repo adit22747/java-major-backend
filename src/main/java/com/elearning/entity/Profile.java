@@ -90,4 +90,6 @@ public class Profile {
 	public void setSearchOccupation(String searchOccupation) {
 		this.searchOccupation = searchOccupation;
 	}
+	
+	
 }

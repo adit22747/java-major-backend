@@ -146,6 +146,9 @@ public class AdminServiceImpl implements AdminService {
 			c.setLastupdated(date);
 			
 		}
+		else {
+			c.setLastupdated(course.get().getLastupdated());
+		}
 //		if(c.getCoursePrice()!=) {
 //			
 //		}

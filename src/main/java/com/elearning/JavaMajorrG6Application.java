@@ -66,7 +66,7 @@ public class JavaMajorrG6Application implements CommandLineRunner {
 		
 		
 //		
-//				Profile p=new Profile("PrimeAdmin", null, null, "Male");
+//				Profile p=new Profile("PrimeAdmin",  null, "Male");
 //		PrimeAdmin padmin=new PrimeAdmin("primeadmin", null, new BCryptPasswordEncoder().encode("admin"), false, false, "fgfg");
 ////		User u=new User("admin", "abc@gmail.com",  new BCryptPasswordEncoder().encode("123xyzz"), false, false, "kjfsgbikrg");
 //		padmin.setRole("prime");
@@ -74,7 +74,7 @@ public class JavaMajorrG6Application implements CommandLineRunner {
 //		padmin.setProfile(p);
 //		ur.save(padmin);
 //		
-//		Profile p1=new Profile("Admin", null, null, "Male");
+//		Profile p1=new Profile("Admin",  null, "Male");
 //	//	PrimeAdmin padmin=new PrimeAdmin("primeadmin", null, new BCryptPasswordEncoder().encode("admin"), false, false, "fgfg");
 //	User u=new User("admin", "abc@gmail.com",  new BCryptPasswordEncoder().encode("admin"), false, false, "kjfsgbikrg");
 //		u.setRole("admin");

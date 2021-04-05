@@ -480,22 +480,17 @@ public class UserController {
 	@GetMapping(path="enrolled/{userid}")
 	public ResponseEntity<List<Course>> getenrolled(@PathVariable int userid) {
 		List<Course>c= uservice.getEnrolledCourse(userid);
-		if (c.isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No course found!!!");
-		} else {
+		
 			return ResponseEntity.status(HttpStatus.ACCEPTED).body(c);
-		}
+		
 	}
 	
 	@PreAuthorize("hasAuthority('user')")
 	@GetMapping(path="finished/{userid}")
 	public ResponseEntity<List<Course>> getFinishedCourse(@PathVariable int userid) {
 		List<Course>c= uservice.finishedCourse(userid);
-		if (c.isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No course found!!!");
-		} else {
-			return ResponseEntity.status(HttpStatus.ACCEPTED).body(c);
-		}
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(c);
+	
 	}
 
 	

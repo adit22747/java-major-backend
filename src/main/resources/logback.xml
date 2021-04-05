@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property name="LOG_PATH" value="D://logs/user-logs.json" />
+    <property name="LOG_PATH" value="tempq/json-log1.json" />
     <appender name="jsonAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <File>${LOG_PATH}</File>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
